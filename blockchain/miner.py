@@ -22,12 +22,14 @@ def proof_of_work(last_proof):
 
     start = timer()
 
-    print("Searching for next proof")
-    proof = 0
+    # print("Searching for next proof")
+    proof = random.random()
+    # print(proof)
     #while we haven't found a valid proof
     while valid_proof(last_hash, proof) is False:
+        # print("looking for proof")
         #random number between 10000000 and 100000000
-        proof = random.uniform(10000000, 100000000)
+        proof += random.randrange(-99999, 9999999)
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
@@ -43,11 +45,16 @@ def valid_proof(last_hash, proof):
 
     # TODO: Your code here!
     #take the guess of last_hash and the proof we're trying and turn into bytelike object
-    guess = f"{last_hash}{proof}".encode()
-    #take guess and turn it in to a hexidecimal has
-    guess_hash = hashlib.sha256(guess).hexdigest()
+    proof_guess = f"{proof}".encode()
+    last_guess = f"{last_hash}".encode()
+    #take guess and turn it in to a hexidecimal hash
+    proof_guess_hash = hashlib.sha256(proof_guess).hexdigest()
+    last_guess_hash = hashlib.sha256(last_guess).hexdigest()
+    # print("proof hash", proof_guess_hash)
+    # print("last hash", last_guess_hash)
+
     #return if first and last 6 digits match
-    return guess_hash[:6] == guess_hash[-6:]
+    return proof_guess_hash[:6] == last_guess_hash[-6:]
 
 if __name__ == '__main__':
     # What node are we interacting with?
@@ -71,13 +78,7 @@ if __name__ == '__main__':
     while True:
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof")
-        try:
-            data = r.json()
-        except ValueError:
-            print("Error:  Non-json response")
-            print("Response returned:")
-            print(r)
-            continue
+        data = r.json()
         last_hash = data
         new_proof = proof_of_work(data.get('proof'))
 
@@ -86,13 +87,8 @@ if __name__ == '__main__':
 
         r = requests.post(url=node + "/mine", json=post_data)
 
-        try:
-            data = r.json()
-        except ValueError:
-            print("Error:  Non-json response")
-            print("Response returned:")
-            print(r)
-            continue
+        data = r.json()
+    
         if data.get('message') == 'New Block Forged':
             coins_mined += 1
             print("Total coins mined: " + str(coins_mined))
