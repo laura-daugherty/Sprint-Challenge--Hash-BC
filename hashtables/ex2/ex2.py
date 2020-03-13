@@ -24,7 +24,7 @@ def reconstruct_trip(tickets, length):
     #find the beginning
     step = hash_table_retrieve(hashtable, "NONE")
     #while we haven't reached the last ticket
-    while step is not "NONE":
+    while step != "NONE":
     # add ticket to route
       route.append(step)
       #move to the next ticket
