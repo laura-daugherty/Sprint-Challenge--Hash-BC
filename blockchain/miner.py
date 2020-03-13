@@ -22,13 +22,13 @@ def proof_of_work(last_proof):
 
     start = timer()
 
-    # print("Searching for next proof")
-    proof = random.random()
+    print("Searching for next proof")
+    proof = 1
     # print(proof)
     #while we haven't found a valid proof
     while valid_proof(last_hash, proof) is False:
         # print("looking for proof")
-        #random number between 10000000 and 100000000
+        #random number in range
         proof += random.randrange(-99999, 9999999)
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
